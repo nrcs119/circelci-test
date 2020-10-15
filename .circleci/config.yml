@@ -1,13 +1,23 @@
-# Use the latest 2.1 version of CircleCI pipeline process engine. See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
-# Use a package of configuration called an orb.
+
 orbs:
-  # Declare a dependency on the welcome-orb
-  welcome: circleci/welcome-orb@0.4.1
-# Orchestrate or schedule a set of jobs
+  aws-ecr: circleci/aws-ecr@6.2.0
+  aws-ecs: circleci/aws-ecs@0.0.11
+
 workflows:
-  # Name the workflow "welcome"
-  welcome:
-    # Run the welcome/run job in its own container
+# Log into AWS, build and push image to Amazon ECR
+  build_and_push_image:
     jobs:
-      - welcome/run
+      - aws-ecr/build-and-push-image:
+          account-url: AWS_ECR_ACCOUNT_URL
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          create-repo: true
+          # Name of dockerfile to use. Defaults to Dockerfile.
+          dockerfile: Dockerfile
+          # AWS_REGION_ENV_VAR_NAME
+          region: AWS_DEFAULT_REGION
+          # myECRRepository
+          repo: '${MY_APP_PREFIX}'
+          # myECRRepoTag
+          tag: "latest"
